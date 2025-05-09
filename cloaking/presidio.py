@@ -163,5 +163,8 @@ class PresidioAnonymizer():
 
         yield json.dumps({ "anonymized_text": anonymized_text.text, "analysis": [result.to_dict() for result in results]})
 
+    def get_response_stream(model_name, system_prompt, user_message, chunking):
+        pass
+
 
 
