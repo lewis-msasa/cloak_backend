@@ -161,27 +161,43 @@ class LLMAnonymizer():
                 self.base_model = base_model
         
         for prompt_chunk in prompt_chunks:
-            print(f"{self.base_model} Processing chunk: ", prompt_chunk)
-            logging.info(f"Processing chunk: {prompt_chunk}")
+            buffer = ""
+            last_parsed_content = ""
+            for chunk in ollama.chat(
+                model=base_model,
+                messages=[
+                    {'role': 'system', 'content': system_prompt},
+                    {'role': 'user', 'content': prompt_chunk}
+                ],
+                format="json",
+                stream=True,
+                options=base_options
+            ):
+                if chunk.get("done"):
+                    try:
+                        results.extend(json.loads(last_parsed_content)["results"])
+                    except json.JSONDecodeError:
+                        print("error in buffer:", last_parsed_content)
+                    break
 
-            words = prompt_chunk.split()
-            chunks = [words[i:i + chunk_size] for i in range(0, len(words), chunk_size)]
-            chunks = [' '.join(chunk) for chunk in chunks]
-            base_options["temperature"] =  kwargs['temperature']
-            base_options["top_p"] = kwargs['top_p']
-            for chunked in chunks:
-          
-                async for chunk in self.async_chat_stream(
-                    model=self.base_model,
-                    messages=[
-                        {'role': 'system', 'content': system_prompt},
-                        {'role': 'user', 'content': chunked}
-                    ],
-                    format="json",
-                    stream=True,
-                    options=base_options
-                ):
-                    log_message = f"Result chunk: {chunk} (Time: {time.time() - start_time:.2f}s)"
-                    logging.info(f"Result chunk: {chunk} (Time: {time.time() - start_time:.2f}s)")
-                    yield chunk
-           
+                content = chunk['message']['content']
+                temp_prefix = buffer + content
+
+                try:
+                    if "]" in content or "}" in content:
+                        json_str = (
+                            temp_prefix[:temp_prefix.rfind("]")] + "]}"
+                            if "]" in content else
+                            temp_prefix[:temp_prefix.rfind("}")] + "}]}"
+                        )
+                        last_parsed_content = json_str
+                        parsed_content = json.loads(json_str)
+                        parsed_content["results"] = results + parsed_content["results"]
+                        log_message = f"Result chunk: {parsed_content} (Time: {time.time() - start_time:.2f}s)"
+                        logging.info(log_message)
+                        yield f"{json.dumps(parsed_content)}\n"
+                    buffer += content
+                except json.JSONDecodeError as e:
+                    print("JSON decode error:", e)
+                    print("content =", content)
+                    continue

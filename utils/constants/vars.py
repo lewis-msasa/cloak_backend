@@ -2,33 +2,25 @@
 system_prompts = {
     "detect": '''You an expert in cybersecurity and data privacy. You are now tasked to detect PII from the given text, using the following taxonomy only:
 
-    "ROLE" : "The role someone plays at organization or at an affiliated institution e.g. Accountant",
-    "TIME": "Dates or time references related to a person. e.g. 25th April",
-    "ADDRESS": "Structured location identifiers typically used for navigation, mailing, or delivery purposes, such as street addresses, postal codes, building numbers, or apartment numbers. e.g. 2123 Daiken Street",
-    "IP_ADDRESS": "Numerical identifiers assigned to devices on a network, such as IPv4 or IPv6 addresses used to locate and identify computers or devices on the internet or local networks. e.g. 127.0.0.1",
-    "URL": "Web addresses that reference online resources, including full or partial links to websites, documents, APIs, or other internet-accessible content. e.g. www.i-school.edu",
-    "SSN": "Social Security Numbers issued by the U.S. government, typically consisting of nine digits and used for identification and tax purposes. e.g. 564-0943",
-    "PHONE_NUMBER": "Sequences of digits used to contact individuals or organizations via telephone, including mobile, landline, or international numbers. e.g. (530) 408-4534",
-    "EMAIL": "Electronic mail addresses that identify users on email systems, typically formatted as username@domain.com.",
-    "DRIVERS_LICENSE": "Government-issued identification numbers associated with driver’s licenses, often including state or country-specific formatting.",
-    "PASSPORT_NUMBER": "Unique identification numbers found in national passports, used for international travel and issued by a country’s government.",
-    "TAXPAYER_IDENTIFICATION_NUMBER": "Government-issued numbers used for tax purposes, such as Employer Identification Numbers (EIN) or Individual Taxpayer Identification Numbers (ITIN).",
-    "ID_NUMBER": "General unique identifiers assigned to individuals or entities, which may include internal system IDs, membership numbers, or other non-public identifiers. e.g. MT123d3",
-    "NAME": "Personal or entity names, including full names, first names, last names, or organization names used to identify individuals or groups. e.g. Angella Davis",
-    "USERNAME": "Identifiers used to log into digital systems or platforms, such as social media handles, system login names, or online aliases.",
-    "KEYS": "Passwords, passkeys, API keys, encryption keys, and any other form of security keys.",
-    "GEOLOCATION": "Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.).",
-    "AFFILIATION": "Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc. e.g. Sutter Health, Center for Cybersecurity, USAID",
-    "DEMOGRAPHIC_ATTRIBUTE": "Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex.",
-    "HEALTH_INFORMATION": "Details concerning an individual's health status, medical conditions, treatment records, and health insurance information or prescription. Something they wouldn't want the public to know e.g. STDs or STIs ,injuries like sprains, sprained my left ACL, prescription like ozempic or MRI .",
-    "FINANCIAL_INFORMATION": "Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities. e.g. salary is 104K per year",
-    "EDUCATIONAL_RECORD": "Educational background details, including academic records, transcripts, degrees, and certification. e.g. Master's in Information Technology or Cornell University",
-    "AGE": "Someone's age or date of birth e.g. 28 years old"
+    "ROLE": "The role someone plays at organization or at an affiliated institution e.g. Accountant",
+    "NAME": "Name",
+    "ADDRESS": "Physical address",
+    "EMAIL": "Email address",
+    "PHONE NUMBER": "Phone number",
+    "ID": "Identifiers, including ID Number, passport number, SSN, driver’s license, taxpayer identification number",
+    "ONLINE IDENTITY": "IP address, username, URL, password, key",
+    "GEO-LOCATION": "Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.)",
+    "AFFILIATION": "Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc.",
+    "DEMOGRAPHIC ATTRIBUTE": "Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex.",
+    "TIME": "Description of a specific date, time, or duration.",
+    "HEALTH INFORMATION": "Details concerning an individual’s health status, medical conditions, treatment records, and health insurance information.",
+    "FINANCIAL INFORMATION": "Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities.",
+    "EDUCATIONAL RECORD": "Educational background details, including academic records, transcripts, degrees, and certification."
     
     For the given message that a user sends to a chatbot, identify all the personally identifiable information using the above taxonomy only, and the entity_type should be selected from the all-caps categories.
     Note that the information should be related to a real person not in a public context, but okay if not uniquely identifiable.
     Result should be in its minimum possible unit.
-    Return me ONLY a json in the following format: {"results": [{"pii_type": YOU_DECIDE_THE_PII_TYPE, "pii_text": PART_OF_MESSAGE_YOU_IDENTIFIED_AS_PII, "pii_reason" : JUSTIFICATION_WHY_ITS_PII]}''',
+    Return me ONLY a json in the following format: {"results": [{"pii_type": YOU_DECIDE_THE_PII_TYPE, "pii_text": PART_OF_MESSAGE_YOU_IDENTIFIED_AS_PII]}''',
     "abstract": '''Rewrite the text to abstract the protected information, without changing other parts. For example:
         Input: <Text>I graduated from CMU, and I earn a six-figure salary. Today in the office...</Text>
         <ProtectedInformation>CMU, Today</ProtectedInformation>
@@ -118,27 +110,28 @@ system_prompts = {
 system_prompts_pdf = {
     "detect": '''You an expert in cybersecurity and data privacy. You are now tasked to detect PII from the given text, using the following taxonomy only:
 
-  ADDRESS
-  IP_ADDRESS
-  URL
-  SSN
-  PHONE_NUMBER
-  EMAIL
-  DRIVERS_LICENSE
-  PASSPORT_NUMBER
-  TAXPAYER_IDENTIFICATION_NUMBER
-  ID_NUMBER
-  NAME
-  USERNAME
-  
-  KEYS: Passwords, passkeys, API keys, encryption keys, and any other form of security keys.
-  GEOLOCATION: Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.). 
-  AFFILIATION: Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc. 
-  DEMOGRAPHIC_ATTRIBUTE: Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex. 
-  TIME: Description of a specific date, time, or duration. 
-  HEALTH_INFORMATION: Details concerning an individual's health status, medical conditions, treatment records, and health insurance information. 
-  FINANCIAL_INFORMATION: Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities. 
-  EDUCATIONAL_RECORD: Educational background details, including academic records, transcripts, degrees, and certification.
+    "ROLE" : "The role someone plays at organization or at an affiliated institution e.g. Accountant",
+    "TIME": "Dates or time references related to a person. e.g. 25th April",
+    "ADDRESS": "Structured location identifiers typically used for navigation, mailing, or delivery purposes, such as street addresses, postal codes, building numbers, or apartment numbers. e.g. 2123 Daiken Street",
+    "IP_ADDRESS": "Numerical identifiers assigned to devices on a network, such as IPv4 or IPv6 addresses used to locate and identify computers or devices on the internet or local networks. e.g. 127.0.0.1",
+    "URL": "Web addresses that reference online resources, including full or partial links to websites, documents, APIs, or other internet-accessible content. e.g. www.i-school.edu",
+    "SSN": "Social Security Numbers issued by the U.S. government, typically consisting of nine digits and used for identification and tax purposes. e.g. 564-0943",
+    "PHONE_NUMBER": "Sequences of digits used to contact individuals or organizations via telephone, including mobile, landline, or international numbers. e.g. (530) 408-4534",
+    "EMAIL": "Electronic mail addresses that identify users on email systems, typically formatted as username@domain.com.",
+    "DRIVERS_LICENSE": "Government-issued identification numbers associated with driver’s licenses, often including state or country-specific formatting.",
+    "PASSPORT_NUMBER": "Unique identification numbers found in national passports, used for international travel and issued by a country’s government.",
+    "TAXPAYER_IDENTIFICATION_NUMBER": "Government-issued numbers used for tax purposes, such as Employer Identification Numbers (EIN) or Individual Taxpayer Identification Numbers (ITIN).",
+    "ID_NUMBER": "General unique identifiers assigned to individuals or entities, which may include internal system IDs, membership numbers, or other non-public identifiers. e.g. MT123d3",
+    "NAME": "Personal or entity names, including full names, first names, last names, or organization names used to identify individuals or groups. e.g. Angella Davis",
+    "USERNAME": "Identifiers used to log into digital systems or platforms, such as social media handles, system login names, or online aliases.",
+    "KEYS": "Passwords, passkeys, API keys, encryption keys, and any other form of security keys.",
+    "GEOLOCATION": "Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.).",
+    "AFFILIATION": "Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc. e.g. Sutter Health, Center for Cybersecurity, USAID",
+    "DEMOGRAPHIC_ATTRIBUTE": "Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex.",
+    "HEALTH_INFORMATION": "Details concerning an individual's health status, medical conditions, treatment records, and health insurance information or prescription. Something they wouldn't want the public to know e.g. STDs or STIs ,injuries like sprains, sprained my left ACL, prescription like ozempic or MRI .",
+    "FINANCIAL_INFORMATION": "Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities. e.g. salary is 104K per year",
+    "EDUCATIONAL_RECORD": "Educational background details, including academic records, transcripts, degrees, and certification. e.g. Master's in Information Technology or Cornell University",
+    "AGE": "Someone's age or date of birth e.g. 28 years old"
     
     For the given message that a user sends to a chatbot, identify all the personally identifiable information using the above taxonomy only, and the entity_type should be selected from the all-caps categories.
     Note that the information should be related to a real person not in a public context, but okay if not uniquely identifiable.
